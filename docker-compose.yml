@@ -1,18 +1,16 @@
 version: '3'
 services:
-  db:
-    image: postgres:latest
-    environment:
-      POSTGRES_DB: mydb
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-
-  app:
-    build: .
+  my-app:
+    image: bmc-test-java-service:latest
     ports:
       - "8080:8080"
-    depends_on:
-      - db
+  sqlite-container:
+    image: sqlite:latest
+    volumes:
+      - ./mydb:/var/lib/sqlite/sqlitesample.db
+
 
 # docker-compose up --build
-# (start both the database container and your Spring Boot application container)
+# docker tag <image-name>:<version-or-tag> <repository-name>/<image-name>:<version-or-tag>
+# docker login <registry-url>
+# docker push <repository-name>/<image-name>:<version-or-tag>

@@ -1,0 +1,8 @@
+replicaCount: 1
+image:
+  repository: some-docker-repo/bmc-test-java-service-dev
+  tag: latest
+
+
+
+#helm install my-release -f values-dev.yaml ./bmc-test-java-service-chart

@@ -1,0 +1,4 @@
+apiVersion: v2
+name: bmc-test-java-service
+version: 0.1.0
+description: Helm chart for bmc-test-java-service
