@@ -22,7 +22,9 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.async.DeferredResult;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -31,6 +33,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @RestController
 @EnableWebMvc
@@ -45,69 +48,74 @@ public class BmcTestJavaAppController {
 
     @ApiOperation(value = "Given a PassengerId return all passenger data in Json format.")
     @GetMapping("/{passengerId}")
-    public ResponseEntity<PassengerInfoDTO> getPassengerInfoByPassengerId(@PathVariable Long passengerId) {
+    @Async
+    public CompletableFuture<ResponseEntity<PassengerInfoDTO>> getPassengerInfoByPassengerId(@PathVariable Long passengerId) {
         try {
             PassengerInfoDTO passengerInfo = passengerInfoService.getPassengerInfoByPassengerId(passengerId);
-            return ResponseEntity.ok().body(passengerInfo);
+            return CompletableFuture.completedFuture(ResponseEntity.ok().body(passengerInfo));
         } catch (PassengerNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return CompletableFuture.completedFuture(ResponseEntity.notFound().build());
         } catch (IOException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
                  JobParametersInvalidException | JobRestartException e) {
-            return ResponseEntity.unprocessableEntity().build();
+            return CompletableFuture.completedFuture(ResponseEntity.unprocessableEntity().build());
         }
     }
 
     @ApiOperation(value = "Return a list of all passengers in Json format")
     @GetMapping()
-    public ResponseEntity<Page<PassengerInfoDTO>> getPassengerInfoByPassengerId(@PageableDefault(size = 10, page = 0) Pageable pageable) {
+    @Async
+    public CompletableFuture<ResponseEntity<Page<PassengerInfoDTO>>> getPassengerInfoByPassengerId(@PageableDefault(size = 10, page = 0) Pageable pageable) {
         try {
             Page<PassengerInfoDTO> page = passengerInfoService.getAllPassengerInfo(pageable);
-            return ResponseEntity.ok(page);
+            return CompletableFuture.completedFuture(ResponseEntity.ok(page));
         } catch (IOException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
                  JobParametersInvalidException | JobRestartException e) {
             log.error(e.getMessage());
-            return ResponseEntity.badRequest().build();
+            return CompletableFuture.completedFuture(ResponseEntity.badRequest().build());
         }
     }
 
     @ApiOperation(value = "Given a PassengerId and attribute list, return only requested attribute list from passenger data in Json format.")
     @GetMapping("/{passengerId}/attributes")
-    public ResponseEntity<PassengerInfoDTO> getSpecificPassengerInfoByPassengerId(@PathVariable Long passengerId, @RequestParam List<String> attributes) {
+    @Async
+    public CompletableFuture<ResponseEntity<PassengerInfoDTO>> getSpecificPassengerInfoByPassengerId(@PathVariable Long passengerId, @RequestParam List<String> attributes) {
         try {
             PassengerInfoDTO passengerInfo = passengerInfoService.getSpecificPassengerInfo(passengerId, attributes);
-            return ResponseEntity.ok(passengerInfo);
+            return CompletableFuture.completedFuture(ResponseEntity.ok(passengerInfo));
         } catch (MissingAttributeException e) {
-            return ResponseEntity.badRequest().build();
+            return CompletableFuture.completedFuture(ResponseEntity.badRequest().build());
         } catch (PassengerNotFoundException e) {
-            return ResponseEntity.notFound().build();
+            return CompletableFuture.completedFuture(ResponseEntity.notFound().build());
         } catch (IOException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
                  JobParametersInvalidException | JobRestartException e) {
-            return ResponseEntity.unprocessableEntity().build();
+            return CompletableFuture.completedFuture(ResponseEntity.unprocessableEntity().build());
         }
     }
 
     @ApiOperation(value = "Return a histogram (bar chart) of Fare prices in percentiles.")
     @GetMapping("/fare-histogram")
-    public ModelAndView getFareHistogram() {
+    @Async
+    public CompletableFuture<ModelAndView> getFareHistogram() {
         HistogramData histogramData;
         try {
             histogramData = histogramService.calculateHistogram(20);
             ModelAndView modelAndView = new ModelAndView("histogram");
             modelAndView.addObject("histogramData", histogramData);
-            return modelAndView;
+            return CompletableFuture.completedFuture(modelAndView);
         } catch (IOException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
                  JobParametersInvalidException | JobRestartException e) {
             ModelAndView modelAndView = new ModelAndView("error-view");
             modelAndView.setStatus(HttpStatus.BAD_REQUEST);
             modelAndView.addObject("errorMessage", "An error occurred while getting all fares.");
-            return modelAndView;
+            return CompletableFuture.completedFuture(modelAndView);
         }
     }
 
     // Optional
     @ApiOperation(value = "Return a histogram (bar chart) of Fare prices in percentiles.")
     @GetMapping("/fare-histogram/image")
-    public ResponseEntity<ByteArrayResource> getFareHistogramImage() {
+    @Async
+    public CompletableFuture<ResponseEntity<ByteArrayResource>> getFareHistogramImage() {
         try {
             passengerInfoService.getFareHistogramAsImage();
 
@@ -121,12 +129,12 @@ public class BmcTestJavaAppController {
             headers.setContentDispositionFormData("attachment", "histogram.png");
 
             // Return the image as a ResponseEntity
-            return ResponseEntity.status(HttpStatus.CREATED)
+            return CompletableFuture.completedFuture(ResponseEntity.status(HttpStatus.CREATED)
                     .headers(headers)
-                    .body(resource);
+                    .body(resource));
         } catch (IOException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
                  JobParametersInvalidException | JobRestartException e) {
-            return ResponseEntity.badRequest().build();
+            return CompletableFuture.completedFuture(ResponseEntity.badRequest().build());
         }
     }
 }
