@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Histogram Chart</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+<h1>Fares Histogram</h1>
+<canvas id="histogramChart" width="400" height="200"></canvas>
+
+<script th:inline="javascript">
+    var histogramData = /*[[${histogramData}]]*/ null;
+
+    const ctx = document.getElementById('histogramChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: histogramData.percentiles,
+            datasets: [{
+                label: 'Histogram',
+                data: histogramData.counts,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+</script>
+</body>
+</html>

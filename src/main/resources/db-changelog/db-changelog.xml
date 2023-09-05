@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.10.xsd">
+
+    <changeSet id="createTable-passenger_info" author="Olga Krasnozhon">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="example_table"/>
+            </not>
+        </preConditions>
+
+        <createTable tableName="passenger_info">
+            <column name="PassengerId" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="Survived" type="INT"/>
+            <column name="Pclass" type="INT"/>
+            <column name="Name" type="VARCHAR(255)"/>
+            <column name="Sex" type="VARCHAR(255)"/>
+            <column name="Age" type="INT"/>
+            <column name="SibSb" type="INT"/>
+            <column name="Parch" type="INT"/>
+            <column name="Ticket" type="VARCHAR(255)"/>
+            <column name="Fare" type="FLOAT8"/>
+            <column name="Cabin" type="VARCHAR(255)"/>
+            <column name="Embarked" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="addPrimaryKey-PassengerInfo" author="Olga Krasnozhon">
+        <addPrimaryKey tableName="passenger_info" columnNames="PassengerId" />
+    </changeSet>
+
+    <changeSet id="addUniqueConstraint-PassengerId" author="Olga Krasnozhon">
+        <addUniqueConstraint tableName="passenger_info" columnNames="PassengerId" />
+    </changeSet>
+
+    <changeSet id="addIndex-Name" author="Olga Krasnozhon">
+        <sql>
+            CREATE INDEX idx_name ON passenger_info (Name);
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>
