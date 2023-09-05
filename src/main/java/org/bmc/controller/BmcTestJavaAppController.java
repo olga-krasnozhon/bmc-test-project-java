@@ -37,7 +37,7 @@ import java.util.List;
 @RequestMapping("/passengers/info")
 @Slf4j
 @RequiredArgsConstructor
-@Api(value = "Test Bmc Java Controller")
+@Api(value = "Test Bmc Java Controller", description = "APIs" )
 public class BmcTestJavaAppController {
 
     private final PassengerInfoServiceImpl passengerInfoService;
@@ -89,7 +89,7 @@ public class BmcTestJavaAppController {
     @ApiOperation(value = "Return a histogram (bar chart) of Fare prices in percentiles.")
     @GetMapping("/fare-histogram")
     public ModelAndView getFareHistogram() {
-        HistogramData histogramData = null;
+        HistogramData histogramData;
         try {
             histogramData = histogramService.calculateHistogram(20);
             ModelAndView modelAndView = new ModelAndView("histogram");
