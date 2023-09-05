@@ -9,6 +9,10 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.statistics.HistogramDataset;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -41,7 +45,7 @@ public class PassengerInfoServiceImpl implements PassengerInfoService {
     }
 
     @Override
-    public void getFareHistogramAsImage() throws IOException {
+    public void getFareHistogramAsImage() throws IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         List<Double> fareData = dataSource.getAllFares();
 
         double[] fares = fareData.stream().mapToDouble(Double::doubleValue).toArray();
@@ -54,7 +58,7 @@ public class PassengerInfoServiceImpl implements PassengerInfoService {
     }
 
     @Override
-    public PassengerInfoDTO getPassengerInfoByPassengerId(String passengerId) throws PassengerNotFoundException, IOException {
+    public PassengerInfoDTO getPassengerInfoByPassengerId(Long passengerId) throws PassengerNotFoundException, IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         PassengerInfo passengerInfo = dataSource.findById(passengerId);
         if (passengerInfo == null) {
             log.error("Passenger not found.");
@@ -64,7 +68,7 @@ public class PassengerInfoServiceImpl implements PassengerInfoService {
     }
 
     @Override
-    public Page<PassengerInfoDTO> getAllPassengerInfo(Pageable pageable) throws IOException {
+    public Page<PassengerInfoDTO> getAllPassengerInfo(Pageable pageable) throws IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         Page<PassengerInfo> passengerInfoPage = dataSource.getAllPassengers(pageable);
         return passengerInfoPage
                 .stream()
@@ -76,7 +80,7 @@ public class PassengerInfoServiceImpl implements PassengerInfoService {
     }
 
     @Override
-    public PassengerInfoDTO getSpecificPassengerInfo(String passengerId, List<String> attributes) throws MissingAttributeException, PassengerNotFoundException, IOException {
+    public PassengerInfoDTO getSpecificPassengerInfo(Long passengerId, List<String> attributes) throws MissingAttributeException, PassengerNotFoundException, IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         PassengerInfo passenger = dataSource.findById(passengerId);
         if (passenger == null) {
             log.error("Passenger not found.");
@@ -146,13 +150,15 @@ public class PassengerInfoServiceImpl implements PassengerInfoService {
                 case "EMBARKED":
                     passengerInfoDTO.setEmbarked(passenger.getEmbarked());
                     break;
+                default:
+                    break;
             }
         }
 
         return passengerInfoDTO;
     }
 
-    public double[] getAllFares() throws IOException {
+    public double[] getAllFares() throws IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         List<Double> fareData = dataSource.getAllFares();
         return fareData.stream().mapToDouble(Double::doubleValue).toArray();
     }

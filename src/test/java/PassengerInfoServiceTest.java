@@ -10,6 +10,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -38,7 +42,7 @@ public class PassengerInfoServiceTest {
     }
 
     @Test
-    public void testGetFareHistogram() throws IOException {
+    public void testGetFareHistogram() throws IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         // Arrange
         List<Double> fareData = Arrays.asList(10.0, 20.0, 30.0, 40.0); // Sample fare data
         when(dataSource.getAllFares()).thenReturn(fareData);
@@ -51,9 +55,9 @@ public class PassengerInfoServiceTest {
     }
 
     @Test
-    public void testGetPassengerInfoByPassengerId() throws IOException {
+    public void testGetPassengerInfoByPassengerId() throws IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         // Arrange
-        String passengerId = "123"; // Sample passenger ID
+        Long passengerId = 123L; // Sample passenger ID
         PassengerInfo expectedPassenger = new PassengerInfo();
         when(dataSource.findById(passengerId)).thenReturn(expectedPassenger);
 
@@ -66,7 +70,7 @@ public class PassengerInfoServiceTest {
     }
 
     @Test
-    public void testGetAllPassengerInfo() throws IOException {
+    public void testGetAllPassengerInfo() throws IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         // Arrange
         Pageable pageable = PageRequest.of(0, 10);
         Page<PassengerInfo> expectedPage = new PageImpl<>(Collections.emptyList());

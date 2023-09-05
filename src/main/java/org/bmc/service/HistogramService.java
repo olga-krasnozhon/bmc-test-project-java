@@ -4,6 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.apache.commons.math3.random.EmpiricalDistribution;
 import org.apache.commons.math3.stat.descriptive.rank.Percentile;
 import org.bmc.model.HistogramData;
+import org.springframework.batch.core.JobParametersInvalidException;
+import org.springframework.batch.core.repository.JobExecutionAlreadyRunningException;
+import org.springframework.batch.core.repository.JobInstanceAlreadyCompleteException;
+import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -15,7 +19,7 @@ public class HistogramService {
 
     private final PassengerInfoServiceImpl passengerInfoService;
 
-    public HistogramData calculateHistogram(int numBins) throws IOException {
+    public HistogramData calculateHistogram(int numBins) throws IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         double[] fares = passengerInfoService.getAllFares();
 
         EmpiricalDistribution empiricalDistribution = new EmpiricalDistribution();

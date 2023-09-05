@@ -30,8 +30,8 @@ public class DatabaseDataSource implements IDataSource {
     }
 
     @Override
-    public PassengerInfo findById(String passengerId) {
-        Optional<PassengerInfo> passengerInfo = passengerInfoJpaRepository.findById(passengerId);
+    public PassengerInfo findById(Long passengerId) {
+        Optional<PassengerInfo> passengerInfo = passengerInfoJpaRepository.findById(String.valueOf(passengerId));
         return passengerInfo.orElse(null);
     }
 

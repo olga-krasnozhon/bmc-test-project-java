@@ -8,6 +8,7 @@ import org.springframework.batch.core.configuration.annotation.JobBuilderFactory
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -88,11 +89,33 @@ public class BatchConfig {
     }
 
     @Bean
-    public Job readCSVFileJob(Step step) {
-        return jobBuilderFactory.get("readCSVFileJob")
+    public Job readCSVFileAndSaveInDbJob(@Qualifier("step") Step step) {
+        return jobBuilderFactory.get("readCSVFileAndSaveInDbJob")
                 .incrementer(new RunIdIncrementer())
                 .flow(step)
                 .end()
+                .build();
+    }
+
+    // read titanic.csv, but not to save to db:
+    @Bean
+    public ItemWriter<PassengerInfo> csvWriter() {
+        return new CsvWriter();
+    }
+
+    @Bean
+    public Step step1(StepBuilderFactory stepBuilderFactory, FlatFileItemReader<PassengerInfo> reader) {
+        return stepBuilderFactory.get("step1")
+                .<PassengerInfo, PassengerInfo>chunk(50)
+                .reader(reader)
+                .writer(csvWriter())
+                .build();
+    }
+
+    @Bean
+    public Job readCSVFileJob(JobBuilderFactory jobBuilderFactory, @Qualifier("step1") Step step) {
+        return jobBuilderFactory.get("readCSVFileJob")
+                .start(step)
                 .build();
     }
 }
