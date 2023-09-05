@@ -38,7 +38,6 @@ public class BatchConfig {
     @Value("classpath:${input.file.path}")
     private Resource inputFile;
 
-    @Qualifier("ds")
     @Autowired
     private DataSource dataSource;
 
@@ -73,7 +72,7 @@ public class BatchConfig {
     public JdbcBatchItemWriter<PassengerInfo> itemWriter() {
         return new JdbcBatchItemWriterBuilder<PassengerInfo>()
                 .dataSource(dataSource)
-                .sql("INSERT INTO passenger_info (passengerId, survived, pClass, name, sex, age, sibSb, parch, ticket, fare, cabin, embarked) VALUES (:passengerId, :survived, :pClass, :name, :sex, :age, :sibSb, :parch, :ticket, :fare, :cabin, :embarked)")
+                .sql("INSERT INTO passenger_info (passenger_id, survived, pclass, name, sex, age, sib_sb, parch, ticket, fare, cabin, embarked) VALUES (:passengerId, :survived, :pClass, :name, :sex, :age, :sibSb, :parch, :ticket, :fare, :cabin, :embarked)")
                 .beanMapped()
                 .build();
     }

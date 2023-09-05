@@ -43,50 +43,6 @@ public class BmcTestJavaAppController {
     private final PassengerInfoServiceImpl passengerInfoService;
     private final HistogramService histogramService;
 
-    @ApiOperation(value = "Return a histogram (bar chart) of Fare prices in percentiles.")
-    @GetMapping("/fare-histogram")
-    public ModelAndView getFareHistogram() {
-        HistogramData histogramData = null;
-        try {
-            histogramData = histogramService.calculateHistogram(20);
-            ModelAndView modelAndView = new ModelAndView("histogram");
-            modelAndView.addObject("histogramData", histogramData);
-            return modelAndView;
-        } catch (IOException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
-                 JobParametersInvalidException | JobRestartException e) {
-            ModelAndView modelAndView = new ModelAndView("error-view");
-            modelAndView.setStatus(HttpStatus.BAD_REQUEST);
-            modelAndView.addObject("errorMessage", "An error occurred while getting all fares.");
-            return modelAndView;
-        }
-    }
-
-    @ApiOperation(value = "Return a histogram (bar chart) of Fare prices in percentiles.")
-    @GetMapping("/fare-histogram/image")
-    public ResponseEntity<ByteArrayResource> getFareHistogramImage() {
-        try {
-            passengerInfoService.getFareHistogramAsImage();
-
-            Path path = Paths.get("histogram.png");
-            byte[] imageBytes = Files.readAllBytes(path);
-
-            // Create a ByteArrayResource to wrap the byte array
-            ByteArrayResource resource = new ByteArrayResource(imageBytes);
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.IMAGE_PNG);
-            headers.setContentLength(imageBytes.length);
-            headers.setContentDispositionFormData("attachment", "histogram.png");
-
-            // Return the image as a ResponseEntity
-            return ResponseEntity.status(HttpStatus.CREATED)
-                    .headers(headers)
-                    .body(resource);
-        } catch (IOException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
-                 JobParametersInvalidException | JobRestartException e) {
-            return ResponseEntity.badRequest().build();
-        }
-    }
-
     @ApiOperation(value = "Given a PassengerId return all passenger data in Json format.")
     @GetMapping("/{passengerId}")
     public ResponseEntity<PassengerInfoDTO> getPassengerInfoByPassengerId(@PathVariable Long passengerId) {
@@ -127,6 +83,50 @@ public class BmcTestJavaAppController {
         } catch (IOException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
                  JobParametersInvalidException | JobRestartException e) {
             return ResponseEntity.unprocessableEntity().build();
+        }
+    }
+
+    @ApiOperation(value = "Return a histogram (bar chart) of Fare prices in percentiles.")
+    @GetMapping("/fare-histogram")
+    public ModelAndView getFareHistogram() {
+        HistogramData histogramData = null;
+        try {
+            histogramData = histogramService.calculateHistogram(20);
+            ModelAndView modelAndView = new ModelAndView("histogram");
+            modelAndView.addObject("histogramData", histogramData);
+            return modelAndView;
+        } catch (IOException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
+                 JobParametersInvalidException | JobRestartException e) {
+            ModelAndView modelAndView = new ModelAndView("error-view");
+            modelAndView.setStatus(HttpStatus.BAD_REQUEST);
+            modelAndView.addObject("errorMessage", "An error occurred while getting all fares.");
+            return modelAndView;
+        }
+    }
+
+    // Optional
+    @ApiOperation(value = "Return a histogram (bar chart) of Fare prices in percentiles.")
+    @GetMapping("/fare-histogram/image")
+    public ResponseEntity<ByteArrayResource> getFareHistogramImage() {
+        try {
+            passengerInfoService.getFareHistogramAsImage();
+
+            Path path = Paths.get("histogram.png");
+            byte[] imageBytes = Files.readAllBytes(path);
+
+            ByteArrayResource resource = new ByteArrayResource(imageBytes);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentType(MediaType.IMAGE_PNG);
+            headers.setContentLength(imageBytes.length);
+            headers.setContentDispositionFormData("attachment", "histogram.png");
+
+            // Return the image as a ResponseEntity
+            return ResponseEntity.status(HttpStatus.CREATED)
+                    .headers(headers)
+                    .body(resource);
+        } catch (IOException | JobInstanceAlreadyCompleteException | JobExecutionAlreadyRunningException |
+                 JobParametersInvalidException | JobRestartException e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 }

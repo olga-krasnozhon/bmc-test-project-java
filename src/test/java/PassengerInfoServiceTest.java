@@ -43,11 +43,9 @@ public class PassengerInfoServiceTest {
 
     @Test
     public void testGetFareHistogram() throws IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        // Arrange
         List<Double> fareData = Arrays.asList(10.0, 20.0, 30.0, 40.0); // Sample fare data
         when(dataSource.getAllFares()).thenReturn(fareData);
 
-        // Act
         passengerInfoService.getFareHistogramAsImage();
 
         // Assert
@@ -56,30 +54,24 @@ public class PassengerInfoServiceTest {
 
     @Test
     public void testGetPassengerInfoByPassengerId() throws IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        // Arrange
-        Long passengerId = 123L; // Sample passenger ID
+        Long passengerId = 123L;
         PassengerInfo expectedPassenger = new PassengerInfo();
         when(dataSource.findById(passengerId)).thenReturn(expectedPassenger);
 
-        // Act
         PassengerInfoDTO result = passengerInfoService.getPassengerInfoByPassengerId(passengerId);
 
-        // Assert
         verify(dataSource, times(1)).findById(passengerId);
         Assertions.assertEquals(expectedPassenger, result);
     }
 
     @Test
     public void testGetAllPassengerInfo() throws IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
-        // Arrange
         Pageable pageable = PageRequest.of(0, 10);
         Page<PassengerInfo> expectedPage = new PageImpl<>(Collections.emptyList());
         when(dataSource.getAllPassengers(pageable)).thenReturn(expectedPage);
 
-        // Act
         Page<PassengerInfoDTO> result = passengerInfoService.getAllPassengerInfo(pageable);
 
-        // Assert
         verify(dataSource, times(1)).getAllPassengers(pageable);
         assertEquals(expectedPage, result);
     }

@@ -20,7 +20,6 @@ public class DatabaseDataSource implements IDataSource {
 
     @Override
     public IPassengerInfoRepository getData() {
-        // Return the database repository for custom queries
         return passengerInfoJpaRepository;
     }
 
@@ -31,7 +30,7 @@ public class DatabaseDataSource implements IDataSource {
 
     @Override
     public PassengerInfo findById(Long passengerId) {
-        Optional<PassengerInfo> passengerInfo = passengerInfoJpaRepository.findById(String.valueOf(passengerId));
+        Optional<PassengerInfo> passengerInfo = passengerInfoJpaRepository.findById(passengerId);
         return passengerInfo.orElse(null);
     }
 
