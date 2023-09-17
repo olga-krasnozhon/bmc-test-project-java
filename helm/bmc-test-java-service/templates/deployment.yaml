@@ -14,13 +14,15 @@ spec:
     spec:
       containers:
         - name: app-container
-          image: {{ .Values.application.image }}
+          image: docker-repo-name/{{ .Values.application.image }}
           ports:
             - containerPort: {{ .Values.application.port }}
+          imagePullPolicy: Always
         - name: db-container
-          image: {{ .Values.database.image }}
+          image: docker-repo-name/{{ .Values.database.image }}
           ports:
             - containerPort: {{ .Values.database.port }}
+          imagePullPolicy: IfNotPresent
           resources:
             requests:
               memory: "64Mi"
