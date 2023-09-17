@@ -61,6 +61,15 @@ public class BmcTestJavaAppController {
         }
     }
 
+// if use reactive approach (WebFlux)
+//    @GetMapping("/{passengerId}")
+//    public Mono<ResponseEntity<PassengerInfoDTO>> getPassengerInfoByPassengerId(@PathVariable Long passengerId) {
+//        return passengerInfoService.getPassengerInfoByPassengerId(passengerId)
+//                .map(passengerInfo -> ResponseEntity.ok().body(passengerInfo))
+//                .onErrorResume(PassengerNotFoundException.class, e -> Mono.just(ResponseEntity.notFound().build()))
+//                .onErrorResume(Throwable.class, e -> Mono.just(ResponseEntity.unprocessableEntity().build()));
+//    }
+
     @ApiOperation(value = "Return a list of all passengers in Json format")
     @GetMapping()
     @Async

@@ -1,0 +1,11 @@
+# Use an official base image (Alpine Linux in this example)
+FROM alpine:latest
+
+# Install SQLite
+RUN apk add --no-cache sqlite
+
+# add a custom SQLite database file
+COPY sqlitesample.db /data/
+
+# Set the working directory
+WORKDIR /data

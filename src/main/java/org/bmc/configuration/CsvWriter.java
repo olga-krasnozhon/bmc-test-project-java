@@ -10,7 +10,7 @@ import java.util.List;
 @Getter
 public class CsvWriter implements ItemWriter<PassengerInfo> {
 
-    private final List<PassengerInfo> readData = new ArrayList<>();
+    private final List<PassengerInfo> readData = new ArrayList<>(); // better to use caching
 
     @Override
     public void write(List<? extends PassengerInfo> items) {

@@ -67,6 +67,18 @@ public class PassengerInfoServiceImpl implements PassengerInfoService {
         return PassengerInfoDTO.mapPassengerInfoToPassengerInfoDTO(passengerInfo);
     }
 
+// if use reactive approach (WebFlux)
+//    public Mono<PassengerInfoDTO> getPassengerInfoByPassengerId(Long passengerId) {
+//        return Mono.fromCallable(() -> {
+//            PassengerInfo passengerInfo = dataSource.findById(passengerId);
+//            if (passengerInfo == null) {
+//                log.error("Passenger not found.");
+//                throw new PassengerNotFoundException("Passenger with id: " + passengerId + " not found");
+//            }
+//            return PassengerInfoDTO.mapPassengerInfoToPassengerInfoDTO(passengerInfo);
+//        });
+//    }
+
     @Override
     public Page<PassengerInfoDTO> getAllPassengerInfo(Pageable pageable) throws IOException, JobInstanceAlreadyCompleteException, JobExecutionAlreadyRunningException, JobParametersInvalidException, JobRestartException {
         Page<PassengerInfo> passengerInfoPage = dataSource.getAllPassengers(pageable);
